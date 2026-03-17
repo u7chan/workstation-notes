@@ -128,9 +128,27 @@ https://www.nerdfonts.com/font-downloads
 
 ### 2. ターミナルのフォントを変更する
 
-Windows Terminal を使っている場合は、対象プロファイルのフォントを Nerd Font に変更する。
+このフォント設定は WSL 側ではなく、Windows ホスト側で行う。
 
-VSCode のターミナルを使っている場合は、`terminal.integrated.fontFamily` に Nerd Font を設定する。
+Windows Terminal を使っている場合は、Windows 側の対象プロファイルのフォントを Nerd Font に変更する。
+
+VSCode のターミナルを使っている場合も、Windows 側の VSCode 設定で `terminal.integrated.fontFamily` に Nerd Font を設定する。
+
+WSL 側にフォントを入れるのではなく、Windows 側に Nerd Font がインストールされている必要がある。
+
+手順:
+
+1. VSCode で設定を開く。
+2. `terminal.integrated.fontFamily` を検索する。
+3. 値にインストール済みの Nerd Font 名を設定する。
+
+例:
+
+```json
+"terminal.integrated.fontFamily": "Hack Nerd Font"
+```
+
+`settings.json` を直接編集する場合は、`Ctrl+Shift+P` から `Preferences: Open User Settings (JSON)` を開いて設定してもよい。
 
 ### 3. 反映を確認する
 
