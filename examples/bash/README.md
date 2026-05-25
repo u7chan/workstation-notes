@@ -231,6 +231,188 @@ gc() {
 }
 
 # =============================================================================
+# メインに戻ってクリーンアップする関数
+# =============================================================================
+#
+# Usage: gc2
+
+gc2() {
+  local current_branch
+  current_branch=$(git branch --show-current 2>/dev/null)
+  if [ "$current_branch" = "main" ]; then
+    git pull
+  else
+    git fetch origin main:main --verbose
+    git switch main
+    gc
+  fi
+}
+
+# =============================================================================
+# Agent 作業残骸クリーンアップ関数
+# =============================================================================
+#
+# Codex/skill が作成した worktree と一時ブランチを整理する。
+# さらに gc の機能（リモート削除済みブランチの削除）も含んでいる。
+#
+# Usage:
+#   agent-gc                 # dry-run
+#   agent-gc -y              # clean な agent worktree と merge 済み agent branch を削除
+#   agent-gc -y -f           # dirty worktree と未マージ agent branch も強制削除
+
+agent-gc() {
+  local apply=0
+  local force=0
+
+  for arg in "$@"; do
+    case "$arg" in
+      -y|--yes) apply=1 ;;
+      -f|--force) force=1 ;;
+      *)
+        echo "usage: agent-gc [-y|--yes] [-f|--force]" >&2
+        return 2
+        ;;
+    esac
+  done
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Not in a git repository." >&2
+    return 1
+  fi
+
+  local root repo project wt_parent project_wt_parent
+  root=$(git rev-parse --show-toplevel) || return
+  repo=$(basename "$root")
+  project=$(basename "$PWD")
+  wt_parent="$(dirname "$root")/${repo}-worktrees"
+  project_wt_parent="$root/projects/${project}-worktrees"
+
+  if [ -n "$(git status --porcelain -uno)" ]; then
+    echo "Working tree has uncommitted changes. Stop." >&2
+    return 1
+  fi
+
+  echo "Switching to main..."
+  git switch main || return
+  git pull --ff-only origin main || return
+  git fetch --prune || return
+  git worktree prune
+
+  local agent_worktrees
+  local worktree_branches
+  local agent_branches
+
+  agent_worktrees=$(git worktree list --porcelain | awk -v root="$root" -v wt_parent="$wt_parent" -v project_wt_parent="$project_wt_parent" -v project="$project" '
+    /^worktree / { path=substr($0, 10); branch="" }
+    /^branch refs\/heads\// { branch=substr($0, 19) }
+    /^$/ {
+      if (path != root && (index(path, wt_parent "/") == 1 || index(path, project_wt_parent "/") == 1 || index(path, "/tmp/" project "-pr") == 1)) {
+        print path
+      }
+      path=""; branch=""
+    }
+    END {
+      if (path != "" && path != root && (index(path, wt_parent "/") == 1 || index(path, project_wt_parent "/") == 1 || index(path, "/tmp/" project "-pr") == 1)) {
+        print path
+      }
+    }
+  ')
+
+  worktree_branches=$(git worktree list --porcelain | awk -v root="$root" -v wt_parent="$wt_parent" -v project_wt_parent="$project_wt_parent" -v project="$project" '
+    /^worktree / { path=substr($0, 10); branch="" }
+    /^branch refs\/heads\// { branch=substr($0, 19) }
+    /^$/ {
+      if (branch != "" && path != root && (index(path, wt_parent "/") == 1 || index(path, project_wt_parent "/") == 1 || index(path, "/tmp/" project "-pr") == 1)) {
+        print branch
+      }
+      path=""; branch=""
+    }
+    END {
+      if (branch != "" && path != root && (index(path, wt_parent "/") == 1 || index(path, project_wt_parent "/") == 1 || index(path, "/tmp/" project "-pr") == 1)) {
+        print branch
+      }
+    }
+  ')
+
+  echo ""
+  echo "Agent worktrees:"
+  if [ -z "$agent_worktrees" ]; then
+    echo "none"
+  fi
+
+  while read -r path; do
+    [ -z "$path" ] && continue
+
+    if [ "$apply" -eq 1 ]; then
+      if git -C "$path" status --porcelain >/tmp/agent-gc-status 2>/dev/null </dev/null && [ -s /tmp/agent-gc-status ]; then
+        if [ "$force" -eq 1 ]; then
+          git worktree remove --force "$path" </dev/null
+        else
+          echo "skip dirty worktree: $path (use -f to force)"
+        fi
+      else
+        if [ "$force" -eq 1 ]; then
+          git worktree remove --force "$path" </dev/null
+        else
+          git worktree remove "$path" </dev/null
+        fi
+      fi
+    else
+      if [ "$force" -eq 1 ]; then
+        echo "would force remove: $path"
+      else
+        echo "would remove: $path"
+      fi
+    fi
+  done < <(echo "$agent_worktrees")
+
+  echo ""
+  echo "Agent branches:"
+  agent_branches=$({
+    echo "$worktree_branches"
+    git branch --format='%(refname:short)' | grep -E '^(codex/pr[0-9]+-|pr-[0-9]+$|ci-fix-pr-[0-9]+$)' || true
+  } | sort -u)
+
+  if [ -z "$agent_branches" ]; then
+    echo "none"
+  fi
+
+  while read -r branch; do
+    [ -z "$branch" ] && continue
+
+    if git merge-base --is-ancestor "$branch" main </dev/null || [ "$force" -eq 1 ]; then
+      if [ "$apply" -eq 1 ]; then
+        git branch -D "$branch" </dev/null
+      else
+        echo "would delete: $branch"
+      fi
+    else
+      echo "skip unmerged branch: $branch (use -f to force)"
+    fi
+  done < <(echo "$agent_branches")
+
+  echo ""
+  echo "Gone branches (remote deleted):"
+  local gone_branches
+  gone_branches=$(git branch -vv | grep ': gone]' | awk '{print $1}' | sed 's/^\*//')
+
+  if [ -z "$gone_branches" ]; then
+    echo "none"
+  fi
+
+  while read -r branch; do
+    [ -z "$branch" ] && continue
+    if [ "$apply" -eq 1 ]; then
+      git branch -D "$branch" </dev/null
+    else
+      echo "would delete: $branch"
+    fi
+  done < <(echo "$gone_branches")
+
+  git worktree prune
+}
+
+# =============================================================================
 # プロンプト表示設定
 # =============================================================================
 #
