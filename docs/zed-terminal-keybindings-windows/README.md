@@ -31,13 +31,16 @@ Zed のユーザー設定ファイル `%APPDATA%\\Zed\\keymap.json` を開く。
 `keymap.json` が JSON 配列になっていることを確認し、次の設定を追加する。
 
 ```jsonc
-{
-  "context": "Terminal",
-  "bindings": {
-    "ctrl-d": ["workspace::SendKeystrokes", "ctrl-shift-5"],
-    "ctrl-w": "pane::CloseActiveItem"
+// Zed keymap example
+[
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-d": ["workspace::SendKeystrokes", "ctrl-shift-5"],
+      "ctrl-w": "pane::CloseActiveItem"
+    }
   }
-}
+]
 ```
 
 すでに他の設定がある場合は、配列の中にこのオブジェクトを追加する。
