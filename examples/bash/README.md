@@ -105,7 +105,12 @@ alias g='git'
 
 # Python簡易HTTPサーバー起動
 # 使用例: http (ポート8000) または http 8080
-alias http='python3 -m http.server'
+http() {
+  python3 -u -m http.server "$@" --bind 127.0.0.1 2>&1 \
+    | sed -u \
+      -e 's#Serving HTTP on 127\.0\.0\.1#Serving HTTP on localhost#' \
+      -e 's#http://127\.0\.0\.1:\([0-9][0-9]*\)/#http://localhost:\1/#'
+}
 
 # AIツールのインストール/更新
 # 使用例: update-claude, update-opencode, update-codex
