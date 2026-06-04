@@ -112,6 +112,18 @@ http() {
       -e 's#http://127\.0\.0\.1:\([0-9][0-9]*\)/#http://localhost:\1/#'
 }
 
+# LAN公開用 Python簡易HTTPサーバー起動
+# 使用例: http-lan (ポート8000) または http-lan 8080
+http-lan() {
+  local host_ip
+  host_ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+
+  python3 -u -m http.server "$@" --bind 0.0.0.0 2>&1 \
+    | sed -u \
+      -e 's#Serving HTTP on 0\.0\.0\.0#Serving HTTP on all interfaces#' \
+      -e "s#http://0\\.0\\.0\\.0:\\([0-9][0-9]*\\)/#http://${host_ip:-0.0.0.0}:\\1/#"
+}
+
 # AIツールのインストール/更新
 # 使用例: update-claude, update-opencode, update-codex
 alias "update-claude"="curl -fsSL https://claude.ai/install.sh | bash"
