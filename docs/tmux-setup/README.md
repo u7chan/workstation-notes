@@ -94,6 +94,21 @@ alias tl='tmux ls'
 alias tn='tmux new -s'
 alias tk='tmux kill-session -t'
 
+# tmux rename-session shortcut
+tr() {
+  if [ "$#" -ne 1 ]; then
+    echo "Usage: tr <new_name>"
+    return 1
+  fi
+
+  if [ -z "$TMUX" ]; then
+    echo "Error: not inside tmux."
+    return 1
+  fi
+
+  tmux rename-session "$1"
+}
+
 # tmux send-keys shortcut
 ts() {
   if [ "$#" -lt 2 ]; then
@@ -124,6 +139,7 @@ tc() {
 | `tl` | `tmux ls` の短縮 |
 | `ta work` | `tmux attach -t work` の短縮 |
 | `tk work` | `tmux kill-session -t work` の短縮 |
+| `tr name` | 現在の session 名を `name` に変更 |
 
 ### `ts`
 
