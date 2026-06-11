@@ -1,5 +1,10 @@
 ## bashrc
 
+### 個別サンプル
+
+- `examples/bash/bashrc.tmux-auto-session`
+  - Windows Terminal + WSL で pane ごとに `tmux` session を自動作成し、pane を閉じたら自動破棄する最小サンプル
+
 ```bash
 # =============================================================================
 # .bashrc ユーザー追加設定 (ホスト側: WSL - Ubuntu 向け)
