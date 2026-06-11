@@ -25,3 +25,7 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND ; "}'printf "\e]9;9;%s\e\\" "$
 設定後はシェルを再起動する。
 
 この設定は Windows Terminal + WSL の場合に有効なカスタム。
+
+## 関連ドキュメント
+
+- `docs/windows-terminal-wsl-tmux-auto-session/README.md`

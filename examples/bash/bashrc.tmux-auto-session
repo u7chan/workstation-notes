@@ -1,0 +1,6 @@
+# Windows Terminal + WSL で pane ごとに tmux session を自動作成する
+# まだ tmux 内でない shell のときだけ実行する
+if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
+  __auto_tmux_session_name="w$$"
+  exec tmux new-session -s "$__auto_tmux_session_name" \; set-option destroy-unattached on
+fi
