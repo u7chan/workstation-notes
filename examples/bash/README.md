@@ -103,6 +103,33 @@ source /home/u7dev/.safe-chain/scripts/init-posix.sh
 # 使用例: g status, g commit -m "fix: ..."
 alias g='git'
 
+# tmux
+alias t='tmux'
+alias ta='tmux attach -t'
+alias tl='tmux ls'
+alias tn='tmux new -s'
+alias tk='tmux kill-session -t'
+
+# tmux send-keys shortcut
+ts() {
+  if [ "$#" -lt 2 ]; then
+    echo "Usage: ts <target-pane> <command>"
+    return 1
+  fi
+
+  tmux send-keys -t "$1" "${*:2}" Enter
+}
+
+# tmux capture-pane shortcut
+tc() {
+  if [ "$#" -lt 1 ]; then
+    echo "Usage: tc <target-pane> [lines]"
+    return 1
+  fi
+
+  tmux capture-pane -t "$1" -p | tail -n "${2:-20}"
+}
+
 # Python簡易HTTPサーバー起動
 # 使用例: http (ポート8000) または http 8080
 http() {
