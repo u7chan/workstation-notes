@@ -82,7 +82,7 @@ tmux kill-session -t work
 
 ## Bash ショートカット
 
-よく使う tmux コマンドは `~/.bashrc.local` にまとめておく。
+よく使う tmux alias は `~/.bash_aliases`、関数は `~/.bash_functions` にまとめておく。`~/.bashrc.local` はこの 2 ファイルを読み込む入口にする。
 
 Bash 設定全体の管理方針は `docs/shell/README.md` を参照。
 
@@ -162,7 +162,7 @@ tc work:0.1 80
 
 ## 反映
 
-`~/.bashrc.local` を更新した後、シェルを開き直す。
+`~/.bash_aliases` / `~/.bash_functions` を更新した後、シェルを開き直す。
 
 すぐ反映したい場合は次を実行する。
 
