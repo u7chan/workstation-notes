@@ -86,8 +86,22 @@ fi
 # その他設定（オプション）
 # -------------------------
 
-# Windowsのターミナルのペイン複製時にディレクトリを引き継ぐ設定
-PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND ; "}'printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")"'
+# Windows Terminal にカレントディレクトリを通知する
+# tmux 内では OSC 9;9 が破棄されるため、DCS パススルーで外側へ届ける
+__wt_report_cwd() {
+  local wpath
+  wpath="$(wslpath -w "$PWD" 2>/dev/null)" || return
+  if [ -n "$TMUX" ]; then
+    printf '\ePtmux;\e\e]9;9;%s\e\e\\\e\\' "$wpath"
+  else
+    printf '\e]9;9;%s\e\\' "$wpath"
+  fi
+}
+
+case ";$PROMPT_COMMAND;" in
+  *";__wt_report_cwd;"*) ;;
+  *) PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}__wt_report_cwd ;;
+esac
 
 # starship init（シェルをいい感じにするやつ）
 # https://starship.rs/ja-JP/faq/
@@ -95,6 +109,18 @@ eval "$(starship init bash)"
 
 # Safe-chain bash initialization script
 source /home/u7dev/.safe-chain/scripts/init-posix.sh
+
+# Windows Terminal + WSL で pane ごとに tmux session を自動作成する
+# まだ tmux 内でない shell のときだけ実行する
+if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
+  __auto_tmux_session_name="w$$"
+  exec tmux new-session -s "$__auto_tmux_session_name" \; \
+    set-option -g allow-passthrough on \; \
+    set-option -g mouse on \; \
+    bind-key -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" \
+      "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e; send-keys -M'" \; \
+    set-option destroy-unattached on
+fi
 ```
 
 ## bashrc.local
