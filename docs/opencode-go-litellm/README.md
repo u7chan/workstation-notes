@@ -26,7 +26,7 @@ OpenCode Go の API エンドポイントは公式ドキュメントで公開さ
 | --- | --- | --- | --- |
 | GLM-5.1 | `glm-5.1` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
 | GLM-5 | `glm-5` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
-| Kimi K2.7 | `kimi-k2.7` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
+| Kimi K2.7 Code | `kimi-k2.7-code` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
 | Kimi K2.6 | `kimi-k2.6` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
 | DeepSeek V4 Pro | `deepseek-v4-pro` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
 | DeepSeek V4 Flash | `deepseek-v4-flash` | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/openai-compatible` |
@@ -38,6 +38,9 @@ OpenCode Go の API エンドポイントは公式ドキュメントで公開さ
 | Qwen3.7 Max | `qwen3.7-max` | `https://opencode.ai/zen/go/v1/messages` | `@ai-sdk/anthropic` |
 | Qwen3.7 Plus | `qwen3.7-plus` | `https://opencode.ai/zen/go/v1/messages` | `@ai-sdk/anthropic` |
 | Qwen3.6 Plus | `qwen3.6-plus` | `https://opencode.ai/zen/go/v1/messages` | `@ai-sdk/anthropic` |
+
+> [!NOTE]
+> 公式ページの表と、実際に `https://opencode.ai/zen/go/v1/models` から返る Model ID がずれる場合がある。LiteLLM の Model Name には、登録時点で実際に使える Model ID を指定する。
 
 OpenCode の設定で使う model id は `opencode-go/<model-id>` 形式になる。
 
@@ -74,6 +77,8 @@ LiteLLM の管理画面で Credential を追加する。
 | Existing Credentials | OpenCode 用に作成した Credential |
 
 例として `deepseek-v4-flash` を登録する場合は、LiteLLM Model Name に `deepseek-v4-flash` を指定する。
+
+公式表で `/v1/messages` / `@ai-sdk/anthropic` とされているモデルも、LiteLLM 管理画面ではこの設定で `Test Connect` し、成功を確認してから追加する。
 
 ![add-model-basic](./add-model-basic.png)
 
