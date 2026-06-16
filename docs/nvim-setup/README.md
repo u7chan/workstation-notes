@@ -1,160 +1,104 @@
-# Neovim の最低限セットアップ
+# Neovim のセットアップ
 
-前提:
-
-- Windows 11
-- WSL2 (Ubuntu)
-- Windows Terminal または VSCode
+Last reviewed: 2026-06-16
 
 ## 概要
 
-WSL 上で `neovim` をインストールし、最低限の `init.lua` と `nvim-tree` を設定する。
+このリポジトリでは、Neovim 設定本体を `chezmoi/dot_config/nvim/` で管理する。
 
-ファイルアイコンを表示したい場合は、`nvim-web-devicons` と Windows 側の Nerd Font 設定も必要になる。
+- 設定配布: `chezmoi`
+- プラグイン管理: `lazy.nvim`
+- LSP 管理: `mason.nvim`
 
-## 手順
+Windows 11 + WSL2 Ubuntu を前提にする。
 
-### 1. WSL 側で Neovim をインストールする
+## 前提
+
+- `neovim 0.10+`（推奨 0.11+）
+- `git`
+- `curl`
+- `ripgrep`
+- `fd`
+- `python3`
+- `gcc` / `g++` / `make`
+- Nerd Font
+
+インストール例:
 
 ```bash
 sudo apt update
-sudo apt install -y neovim
+sudo apt install -y git curl ripgrep fd-find python3 unzip gcc g++ make
 ```
 
-### 2. 起動確認をする
+Ubuntu 標準パッケージの `neovim` は古いことがある。現行の `lazy.nvim` / `nvim-lspconfig` / `nvim-treesitter` 構成では `0.10+` を使う。
+
+## 適用方法
+
+`chezmoi` で dotfiles を反映する。
 
 ```bash
-nvim -v
+chezmoi init --source ~/workspace/workstation-notes/chezmoi
+chezmoi apply
 ```
 
-### 3. 設定ファイル用のディレクトリを作る
+反映される設定先:
+
+- `~/.config/nvim/init.lua`
+- `~/.config/nvim/lua/config/*.lua`
+- `~/.config/nvim/lua/plugins/*.lua`
+- `~/.config/nvim/lazy-lock.json`
+
+## 初回起動
 
 ```bash
-mkdir -p ~/.config/nvim
+nvim
 ```
 
-### 4. `init.lua` を作成する
+初回起動時に `lazy.nvim` が bootstrap され、`lazy-lock.json` に沿ってプラグインが同期される。
 
-Neovim または VSCode で `~/.config/nvim/init.lua` を開く。
+確認コマンド:
+
+- `:Lazy`
+- `:Mason`
+- `:TSInstallInfo`
+- `:checkhealth`
+
+## LSP / Treesitter
+
+この設定で使う主な LSP:
+
+- `lua_ls`
+- `ts_ls`
+- `jsonls`
+- `bashls`
+
+Node 系 LSP を先に入れる例:
 
 ```bash
-nvim ~/.config/nvim/init.lua
-# or
-code ~/.config/nvim/init.lua
+npm install -g bash-language-server typescript typescript-language-server vscode-langservers-extracted
 ```
 
-最低限の設定例:
+`lua_ls` は `:Mason` から入れてよい。
 
-```lua
--- 行番号を表示
-vim.opt.number = true
+Treesitter は `nvim-treesitter` を使う。`build = ":TSUpdate"` を設定しているため、初回同期時または更新時に parser 更新が走ることがある。
 
--- マウス操作を有効化
-vim.opt.mouse = "a"
+## 主なキーマップ
 
--- システムクリップボードを使う
-vim.opt.clipboard = "unnamedplus"
-
--- Visual mode で Ctrl+C でもコピーできるようにする
-vim.keymap.set("v", "<C-c>", '"+y')
-```
-
-### 5. `nvim-tree` をインストールする
-
-まずプラグイン配置先を作る。
-
-```bash
-mkdir -p ~/.local/share/nvim/site/pack/plugins/start
-```
-
-その後、`nvim-tree` とアイコン表示用のプラグインを clone する。
-
-```bash
-git clone https://github.com/nvim-tree/nvim-tree.lua \
-  ~/.local/share/nvim/site/pack/plugins/start/nvim-tree.lua
-
-git clone https://github.com/nvim-tree/nvim-web-devicons \
-  ~/.local/share/nvim/site/pack/plugins/start/nvim-web-devicons
-```
-
-### 6. `init.lua` に `nvim-tree` の設定を追加する
-
-`init.lua` の末尾に次を追加する。
-
-```lua
--- nvim-tree setup
-require("nvim-tree").setup()
-```
-
-### 7. 動作確認をする
-
-```bash
-nvim .
-```
-
-Neovim 起動後に次を実行して、ファイルツリーが開けば設定完了。
-
-```vim
-:NvimTreeToggle
-```
+- `<leader>e`: file tree の開閉
+- `<leader>o`: file tree へフォーカス
+- `<leader>ff`: file search
+- `<leader>fg`: live grep
+- `<leader>m`: Mason
+- `<leader>ti`: Treesitter install info
+- `gd`, `gr`, `K`: LSP ナビゲーション
 
 ## 補足
 
-### アイコン表示の成功例
+- `fd` コマンドは Ubuntu では `fdfind` 名で入ることがある
+- クリップボード連携が効かない場合は `:checkhealth` で provider を確認する
+- フォント未設定だと devicons や starship の記号が崩れる
 
-| 構成 | 表示例 |
-| - | - |
-| `nvim-tree` のみ | ![nvim-tree default icons](./nvim-tree-default.png) |
-| `nvim-tree` + `nvim-web-devicons` + Nerd Font | ![nvim-web-devicons icons](./nvim-tree-devicons.png) |
+## 関連
 
-### アイコンが崩れる場合
-
-`nvim-web-devicons` を入れていても、Windows 側で Nerd Font を使っていないと、アイコンが四角や文字化けのように見えることがある。
-
-例: `nvim-web-devicons` を入れていても、WSL のデフォルトに近い `Ubuntu Mono` のままだと次のように崩れることがある。
-
-![nvim-web-devicons on Ubuntu Mono](./nvim-tree-ubuntu-mono.png)
-
-### 1. Windows 側に Nerd Font を入れる
-
-ダウンロード先:
-
-https://www.nerdfonts.com/font-downloads
-
-例:
-
-- Hack Nerd Font
-- JetBrainsMono Nerd Font
-
-### 2. ターミナルのフォントを変更する
-
-このフォント設定は WSL 側ではなく、Windows ホスト側で行う。
-
-Windows Terminal を使っている場合は、Windows 側の対象プロファイルのフォントを Nerd Font に変更する。
-
-VSCode のターミナルを使っている場合も、Windows 側の VSCode 設定で `terminal.integrated.fontFamily` に Nerd Font を設定する。
-
-WSL 側にフォントを入れるのではなく、Windows 側に Nerd Font がインストールされている必要がある。
-
-手順:
-
-1. VSCode で設定を開く。
-2. `terminal.integrated.fontFamily` を検索する。
-3. 値にインストール済みの Nerd Font 名を設定する。
-
-例:
-
-```json
-"terminal.integrated.fontFamily": "Hack Nerd Font"
-```
-
-`settings.json` を直接編集する場合は、`Ctrl+Shift+P` から `Preferences: Open User Settings (JSON)` を開いて設定してもよい。
-
-### 3. 反映を確認する
-
-ターミナルを開き直して `nvim .` を実行し、`NvimTreeToggle` でアイコン表示を確認する。
-
-## 補足メモ
-
-- `vim.opt.clipboard = "unnamedplus"` が効かない場合は、`nvim` 側の clipboard provider が足りないことがある。その場合は `:checkhealth` で確認する。
-- いったん最小構成で入れて、必要になってからキーマップや補完プラグインを追加すると管理しやすい。
+- `docs/chezmoi-setup/README.md`
+- `docs/starship-setup/README.md`

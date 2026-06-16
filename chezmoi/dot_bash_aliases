@@ -1,0 +1,30 @@
+# =============================================================================
+# エイリアス定義
+# =============================================================================
+
+# -------------------------
+# プロジェクトエイリアス設定
+# -------------------------
+alias monorepo="cd $HOME/workspace/monorepo"
+alias shell="cd $HOME/workspace/shell"
+alias skills="cd $HOME/workspace/agent-skills"
+alias skillss="cd $HOME/workspace/agent-skills-sandbox"
+alias tmp="cd $HOME/workspace/tmp"
+alias co="copilot"
+
+# Gitコマンドの短縮
+# 使用例: g status, g commit -m "fix: ..."
+alias g='git'
+
+# tmux
+alias t='tmux'
+alias ta='tmux attach -t'
+alias tl='tmux ls'
+alias tn='tmux new -s'
+alias tk='tmux kill-session -t'
+
+# ツールのインストール/更新
+# 使用例: update-claude, update-opencode, update-codex, update-ai
+alias "update-claude"="curl -fsSL https://claude.ai/install.sh | bash"
+alias "update-opencode"="curl -fsSL https://opencode.ai/install | bash"
+alias "update-nvm"="curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash"
