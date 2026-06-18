@@ -25,28 +25,3 @@ fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# =============================================================================
-# プロンプト表示設定
-# =============================================================================
-#
-# 【表示形式】
-#   username@hostname current_dir (git_branch) $
-#   例: u7dev@my-pc workspace (feature/login) $
-#
-# 【色設定】
-#   カレントディレクトリ: 青色 (\e[34m)
-#   Gitブランチ名:       緑色 (\e[32m)
-#   リセット:            標準色 (\e[0m)
-#
-# 【技術メモ】
-#   \[ と \] で囲むことで、Bashに「非表示文字（色コード）」を通知。
-#   これがないと長いコマンド入力時に折り返しが壊れる。
-
-
-# 構造分解:
-# \u@\h                  : ユーザー名@ホスト名
-# \[\e[34m\]\W\[\e[0m\]  : 青色でカレントディレクトリ（基底名のみ）
-# \[\e[32m\]$(git_branch) : 緑色でGitブランチ（存在すれば）
-# \[\e[0m\]\$             : 色リセット後、$（一般ユーザー）または #（root）
-PS1='\u@\h \[\e[34m\]\W\[\e[0m\]\[\e[32m\]$(git_branch)\[\e[0m\] \$ '

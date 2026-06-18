@@ -2,6 +2,9 @@
   name = u7chan
   email = 34462401+u7chan@users.noreply.github.com
 
+[includeIf "gitdir:~/workspace/work/"]
+  path = ~/.gitconfig.work
+
 [alias]
   ; status 表示
   s  = status            ; 通常表示

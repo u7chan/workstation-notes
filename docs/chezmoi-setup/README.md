@@ -125,6 +125,20 @@ npm install -g bash-language-server typescript typescript-language-server vscode
 
 Lua LSP は Mason から入れてよい。
 
+## Git アカウントを使い分ける
+
+配布する `~/.gitconfig` は個人用 identity を既定値にし、`~/workspace/work/` 配下では `~/.gitconfig.work` を追加で読み込む。
+
+仕事用 identity はリポジトリへ含めず、各端末で作成する。
+
+```gitconfig
+[user]
+  name = Your Work Name
+  email = you@example.com
+```
+
+別の配置先を使う場合は、`chezmoi/dot_gitconfig` の `includeIf` にある `gitdir` を変更する。これは commit の署名者を切り替える設定であり、GitHub の認証アカウント切替は `gh auth switch` や SSH host の設定を別途使う。
+
 ## 運用
 
 - dotfiles 変更は `chezmoi/` の source を直接更新する
