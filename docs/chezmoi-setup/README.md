@@ -47,14 +47,16 @@ sudo apt install -y git curl tmux ripgrep fd-find python3 python3-pip luarocks u
 追加で用意するもの:
 
 - `chezmoi`
-- `neovim 0.10+`（推奨 0.11+）
+- `neovim 0.11.3+`
 - `node` / `npm` または `nvm`
 - `starship`
 - `gh`
 - Nerd Font
+- `win32yank.exe`（WSL2 で Windows クリップボードと連携する場合）
 
 `chezmoi` のインストールは公式手順を使う。
 Ubuntu 標準パッケージの `neovim` は古いことがあるため、現行プラグイン構成では公式配布物か新しめの配布元を使う。
+Ubuntu では `fd-find` の実行ファイル名が `fdfind` になるため、必要に応じて `~/.local/bin/fd` へのシンボリックリンクを作る。
 
 ### 2. source directory を指定して初期化する
 
@@ -108,7 +110,7 @@ nvim
 
 `lazy.nvim` と `lazy-lock.json` でプラグイン構成を再現する。
 
-この構成は `neovim 0.10+` を前提にする。`0.9.x` では `nvim-lspconfig` と `nvim-treesitter` の現行版が不足する。
+この構成は `neovim 0.11.3+` を前提にする。古いバージョンでは `nvim-lspconfig` の現行版を利用できない。
 
 追加で必要になりやすいもの:
 
