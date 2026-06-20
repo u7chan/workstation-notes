@@ -1,6 +1,6 @@
 # Neovim のセットアップ
 
-Last reviewed: 2026-06-16
+Last reviewed: 2026-06-20
 
 ## 概要
 
@@ -14,13 +14,14 @@ Windows 11 + WSL2 Ubuntu を前提にする。
 
 ## 前提
 
-- `neovim 0.10+`（推奨 0.11+）
+- `neovim 0.11.3+`
 - `git`
 - `curl`
 - `ripgrep`
 - `unzip`
 - C compiler / `make`
 - Nerd Font
+- `win32yank.exe`（WSL2 で Windows クリップボードと連携する場合）
 
 不足している必須パッケージのインストール例:
 
@@ -40,7 +41,62 @@ sudo apt install -y git curl ripgrep unzip build-essential
 sudo apt install -y fd-find python3
 ```
 
-Ubuntu 標準パッケージの `neovim` は古いことがある。現行の `lazy.nvim` / `nvim-lspconfig` / `nvim-treesitter` 構成では `0.10+` を使う。
+Ubuntu では `fd-find` のコマンド名が `fdfind` になるため、`fd` として使う場合はシンボリックリンクを作る。
+
+```bash
+mkdir -p ~/.local/bin
+ln -s /usr/bin/fdfind ~/.local/bin/fd
+```
+
+Ubuntu 標準パッケージの `neovim` は古いことがある。現行の `nvim-lspconfig` が要求するバージョンに合わせ、`0.11.3+` を使う。
+
+公式配布版を使う場合は、展開先を `~/.local/opt/nvim-<version>/`、実行ファイルのリンクを `~/.local/bin/nvim` にすると、apt 版を残したまま切り替えられる。
+
+WSL2 のクリップボード連携には `win32yank` の x64 リリースを利用できる。展開した `win32yank.exe` を `~/.local/bin/` に置き、次のコマンドで認識されることを確認する。
+
+```bash
+command -v win32yank.exe
+win32yank.exe -o --lf >/dev/null
+```
+
+## 現在の環境への適用記録
+
+2026-06-20 に Ubuntu 24.04.4 LTS / WSL2 へ次を適用した。
+
+- Neovim `0.12.3`
+  - 公式 `nvim-linux-x86_64.tar.gz` を使用
+  - SHA-256を検証
+  - 配置先: `~/.local/opt/nvim-v0.12.3/`
+  - 実行パス: `~/.local/bin/nvim`
+- win32yank `0.1.1`
+  - 公式 `win32yank-x64.zip` を使用
+  - 配置先: `~/.local/bin/win32yank.exe`
+- build-essential `12.10ubuntu1`
+- fd-find `9.0.0-1`
+  - `~/.local/bin/fd` から `/usr/bin/fdfind` を参照
+- lua-language-server `3.18.2`
+  - Mason で導入
+- bash-language-server `5.6.0`
+- typescript-language-server `5.3.0`
+- TypeScript `6.0.3`
+- vscode-langservers-extracted `4.10.0`
+  - Node 系の4パッケージは npm のグローバル領域へ導入
+
+確認結果:
+
+```text
+$ nvim --version
+NVIM v0.12.3
+
+$ fd --version
+fdfind 9.0.0
+
+$ command -v win32yank.exe
+/home/u7dev/.local/bin/win32yank.exe
+```
+
+現在の設定を使った headless 起動と、WSL・win32yank の実行可能判定が成功することを確認済み。
+Lua ファイルを開いた状態で `lua-language-server` が起動できることも確認済み。
 
 ## 適用方法
 
@@ -72,6 +128,7 @@ nvim
 - `:Mason`
 - `:TSInstallInfo`
 - `:checkhealth`
+- `:checkhealth vim.lsp`
 
 ## LSP / Treesitter
 
