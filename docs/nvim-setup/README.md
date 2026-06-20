@@ -41,6 +41,17 @@ sudo apt install -y git curl ripgrep unzip build-essential
 sudo apt install -y fd-find python3
 ```
 
+`~/.local/bin` に配置したコマンドを利用できるよう、PATH に含まれていることを確認する。
+
+```bash
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) echo "PATH configured" ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+```
+
+このリポジトリの `chezmoi/dot_bashrc` には同じ PATH 設定が含まれる。`chezmoi apply` 後にターミナルを開き直すと、以降のシェルでも有効になる。
+
 Ubuntu では `fd-find` のコマンド名が `fdfind` になるため、`fd` として使う場合はシンボリックリンクを作る。
 
 ```bash
