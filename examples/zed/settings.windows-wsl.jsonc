@@ -1,0 +1,66 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+    "restore_on_startup": "last_workspace",
+    "cli_default_open_behavior": "existing_window",
+
+    "theme": {
+        "mode": "dark",
+        "light": "One Light",
+        "dark": "Ayu Mirage"
+    },
+    "icon_theme": {
+        "mode": "dark",
+        "light": "Catppuccin Latte",
+        "dark": "Catppuccin Frappé"
+    },
+    "ui_font_size": 16,
+
+    "buffer_font_family": "CodeNewRoman Nerd Font Mono",
+    "buffer_font_size": 15,
+    "format_on_save": "off",
+
+    "project_panel": {
+        "dock": "left"
+    },
+    "outline_panel": {
+        "dock": "left"
+    },
+    "git_panel": {
+        "dock": "right"
+    },
+    "collaboration_panel": {
+        "button": false
+    },
+
+    "agent": {
+        "sidebar_side": "right",
+        "dock": "right",
+        "favorite_models": [],
+        "model_parameters": []
+    },
+    "agent_servers": {
+        "codex-acp": {
+            "type": "registry"
+        },
+        "claude-acp": {
+            "type": "registry"
+        },
+        "opencode": {
+            "type": "registry"
+        }
+    },
+
+    "terminal": {
+        "working_directory": "first_project_directory",
+        "shell": {
+            "program": "wsl.exe"
+        }
+    }
+}
