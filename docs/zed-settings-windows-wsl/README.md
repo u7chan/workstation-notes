@@ -64,6 +64,16 @@ Last reviewed: 2026-06-27
 |`agent_servers.claude-acp.type`|`registry`|Claude ACPをZedのレジストリ経由で利用する|
 |`agent_servers.opencode.type`|`registry`|OpenCodeをZedのレジストリ経由で利用する|
 
+## 言語サーバー
+
+|パラメーター|設定値|目的・採用理由|
+|-|-|-|
+|`languages.CSS.language_servers`|`["tailwindcss-intellisense-css"]`|Tailwind CSS v4 の `@theme` ディレクティブをビルトイン CSS LSP が認識しないため、Tailwind 用 LSP に切り替える|
+
+### 背景
+
+Tailwind CSS v4 は `@import 'tailwindcss'` と `@theme { ... }` でテーマを定義する。Zed のビルトイン CSS LSP (vscode-css-language-server) は `@theme` を認識せず `Unknown at rule @theme` 警告を出す。CSS に対して `tailwindcss-intellisense-css` を使うことで、警告を抑制しつつ Tailwind の補完も有効になる。
+
 ## ターミナル
 
 |パラメーター|設定値|目的・採用理由|
