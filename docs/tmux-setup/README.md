@@ -1,6 +1,6 @@
 # tmux のセットアップ
 
-Last reviewed: 2026-06-11
+Last reviewed: 2026-06-28
 
 ## 概要
 
@@ -8,7 +8,11 @@ tmux は 1 つのターミナル内で複数の作業画面を扱うためのツ
 
 WSL2 Ubuntu + Windows Terminal で、レビューや AI 駆動開発の確認作業を複数ペインに分けて進めやすくする。
 
-このガイドでは標準設定のまま使う。`.tmux.conf` によるカスタマイズは扱わない。
+`.tmux.conf` は chezmoi で管理し、次を設定している。
+
+- `escape-time 0`：ESC キーが tmux に吸収されるのを防ぐ（tmux 内で動作する CLI ツールの中断操作などに必要）
+- `mouse on`：マウス操作の有効化
+- `allow-passthrough on`：OSC シーケンス等のパススルー
 
 ## 前提
 
