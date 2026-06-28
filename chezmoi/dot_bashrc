@@ -226,8 +226,6 @@ fi
 if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
   __auto_tmux_session_name="w$$"
   exec tmux new-session -s "$__auto_tmux_session_name" \; \
-    set-option -g allow-passthrough on \; \
-    set-option -g mouse on \; \
     bind-key -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" \
       "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e; send-keys -M'" \; \
     set-option destroy-unattached on
