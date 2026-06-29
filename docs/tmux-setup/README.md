@@ -1,6 +1,6 @@
 # tmux のセットアップ
 
-Last reviewed: 2026-06-28
+Last reviewed: 2026-06-29
 
 ## 概要
 
@@ -13,6 +13,8 @@ WSL2 Ubuntu + Windows Terminal で、レビューや AI 駆動開発の確認作
 - `escape-time 0`：ESC キーが tmux に吸収されるのを防ぐ（tmux 内で動作する CLI ツールの中断操作などに必要）
 - `mouse on`：マウス操作の有効化
 - `allow-passthrough on`：OSC シーケンス等のパススルー
+- prefix を `Ctrl+b` から `Ctrl+a` に変更
+- prefix に続く `d` / `s` / `w` で pane の分割と終了
 
 ## 前提
 
@@ -44,9 +46,45 @@ command -v tmux
 | pane | window 内で分割された作業領域 |
 | prefix | tmux に命令を送るための前置キー |
 
-標準の prefix は `Ctrl+b`。
+標準の prefix は `Ctrl+b`。この環境では操作しやすいように `Ctrl+a` へ変更している。
 
-たとえば新しい pane を作る場合は、`Ctrl+b` を押してから `%` を押す。先に prefix を押すことで、通常のシェル入力ではなく tmux への操作として扱われる。
+prefix は同時押しではない。`Ctrl+a` を押して離してから、次のキーを押す。先に prefix を押すことで、通常のシェル入力ではなく tmux への操作として扱われる。
+
+## ペイン操作のキーバインド
+
+Windows Terminal の `Ctrl+d` / `Ctrl+Shift+d` / `Ctrl+w` とは分け、tmux 内では prefix に続けて通常キーを押す。
+
+| 操作 | キー |
+| - | - |
+| 左右に分割する | `Ctrl+a` → `d` |
+| 上下に分割する | `Ctrl+a` → `s` |
+| pane を終了する | `Ctrl+a` → `w`、確認後に `y` |
+
+tmux 標準の `Ctrl+a` → `%`（左右分割）と `Ctrl+a` → `"`（上下分割）もそのまま使える。`Ctrl+a` → `d` は tmux 標準では session から抜ける操作だが、この設定では左右分割へ上書きされる。
+
+設定は `chezmoi/dot_tmux.conf` で管理する。
+
+```tmux
+# ペイン操作用のカスタムキーバインド
+# 合わない場合は、このブロックをコメントアウトすると標準設定へ戻せる
+# --- custom pane keybindings ---
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+bind-key d split-window -h
+bind-key s split-window -v
+bind-key w confirm-before -p "kill-pane? (y/n)" kill-pane
+# --- end custom pane keybindings ---
+```
+
+この操作が合わない場合は、開始・終了コメント間のブロック全体をコメントアウトする。既存の tmux server には読み込み済みの設定が残るため、すべての session を終了して tmux を起動し直すと標準の `Ctrl+b` に戻る。
+
+設定を現在の tmux server へ反映する。
+
+```bash
+tmux source-file ~/.tmux.conf
+```
 
 ## 最小操作
 
@@ -72,10 +110,11 @@ tmux 内でよく使う操作:
 
 | 操作 | キー |
 | - | - |
-| session から抜ける | `Ctrl+b` → `d` |
-| 左右に分割する | `Ctrl+b` → `%` |
-| 上下に分割する | `Ctrl+b` → `"` |
-| pane を移動する | `Ctrl+b` → 矢印キー |
+| session から抜ける | `tmux detach-client` |
+| 左右に分割する | `Ctrl+a` → `d` または `%` |
+| 上下に分割する | `Ctrl+a` → `s` または `"` |
+| pane を移動する | `Ctrl+a` → 矢印キー |
+| pane を終了する | `Ctrl+a` → `w`、確認後に `y` |
 | pane を終了する | shell で `exit` |
 
 session を終了する。
@@ -153,7 +192,7 @@ tc() {
 ts work:0.1 "git status"
 ```
 
-`work:0.1` は `session:window.pane` の形式。対象 pane は `Ctrl+b` → `q` で確認できる。
+`work:0.1` は `session:window.pane` の形式。対象 pane は `Ctrl+a` → `q` で確認できる。
 
 ### `tc`
 
