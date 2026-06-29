@@ -50,6 +50,8 @@ command -v tmux
 
 prefix は同時押しではない。`Ctrl+a` を押して離してから、次のキーを押す。先に prefix を押すことで、通常のシェル入力ではなく tmux への操作として扱われる。
 
+Bash の行頭移動など、入力先へ通常の `Ctrl+a` を送りたい場合は `Ctrl+a` → `Ctrl+a` と押す。`bind C-a send-prefix` は、2 回目の `Ctrl+a` を tmux 内の shell やアプリへ渡すための設定。
+
 ## ペイン操作のキーバインド
 
 Windows Terminal の `Ctrl+d` / `Ctrl+Shift+d` / `Ctrl+w` とは分け、tmux 内では prefix に続けて通常キーを押す。
