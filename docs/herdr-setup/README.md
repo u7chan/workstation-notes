@@ -124,25 +124,6 @@ herdr server stop
 
 `herdr server stop` はペイン内のプロセスも終了させるため、単なる detach とは用途が異なる。
 
-## Codex 連携
-
-Codex は追加設定なしでも画面から状態を検出できる。公式連携を入れると Codex のセッション ID も Herdr へ通知され、Herdr サーバー再起動後のネイティブなセッション復元に使われる。
-
-```bash
-herdr integration install codex
-herdr integration status
-```
-
-この操作は `~/.codex/herdr-agent-state.sh` と `~/.codex/hooks.json` を作成または更新し、`~/.codex/config.toml` の `[features] hooks = true` を有効にする。既存の Codex 設定へ変更が入るため、内容を確認してから導入する。
-
-不要になった場合は次で解除できる。
-
-```bash
-herdr integration uninstall codex
-```
-
-アンインストールしても `config.toml` の hooks 設定は元に戻らない。
-
 ## 更新
 
 公式インストーラーで導入した場合は、Herdr 自身で更新できる。
