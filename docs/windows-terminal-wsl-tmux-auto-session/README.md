@@ -1,6 +1,6 @@
 # Windows Terminal + WSL で pane ごとに tmux session を自動作成する
 
-Last reviewed: 2026-06-12
+Last reviewed: 2026-07-01
 
 ## 概要
 
@@ -40,7 +40,7 @@ Windows Terminal のディレクトリ引き継ぎは OSC 9;9 エスケープシ
 
 session には `destroy-unattached on` を付ける。これにより、その pane が最後の client なら、閉じた時点で session も自動削除される。
 
-tmux 起動時に `allow-passthrough on`、`mouse on`、`WheelUpPane` のキーバインドも設定する。これにより `.tmux.conf` を別途編集せず、`.bashrc` 側の設定だけでディレクトリ引き継ぎとスクロールを有効化する。
+`allow-passthrough on`、`mouse on`、`escape-time 100` は `chezmoi/dot_tmux.conf` で管理する。自動起動時には `WheelUpPane` のキーバインドと、pane を閉じたときに session を破棄する `destroy-unattached` を設定する。
 
 ## 設定例
 
@@ -71,8 +71,6 @@ esac
 if [ -z "$TMUX" ] && [ -z "$HERDR_ENV" ] && [ -n "$WT_SESSION" ]; then
   __auto_tmux_session_name="w$$"
   exec tmux new-session -s "$__auto_tmux_session_name" \; \
-    set-option -g allow-passthrough on \; \
-    set-option -g mouse on \; \
     bind-key -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" \
       "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e; send-keys -M'" \; \
     set-option destroy-unattached on
@@ -113,6 +111,7 @@ starship を使う場合は、このブロックを `eval "$(starship init bash)
 - 既存の共有 session に attach する運用とは相性が違う
 - `tl` を使いたい場合は `alias tl='tmux ls'` を `~/.bashrc.local` などに定義する
 - 既存の tmux server が動いている場合でも、新しい pane 起動時に必要な tmux option は再設定される
+- 起動時に `11;rgb:...` や `61;4;6;...c` が入力欄へ表示される場合は、`docs/tmux-setup/README.md` のトラブルシューティングを参照する
 
 ## 関連ドキュメント
 

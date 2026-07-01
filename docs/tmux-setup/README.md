@@ -1,6 +1,6 @@
 # tmux のセットアップ
 
-Last reviewed: 2026-06-29
+Last reviewed: 2026-07-01
 
 ## 概要
 
@@ -10,7 +10,7 @@ WSL2 Ubuntu + Windows Terminal で、レビューや AI 駆動開発の確認作
 
 `.tmux.conf` は chezmoi で管理し、次を設定している。
 
-- `escape-time 0`：ESC キーが tmux に吸収されるのを防ぐ（tmux 内で動作する CLI ツールの中断操作などに必要）
+- `escape-time 100`：Windows Terminal の端末応答を tmux が分割して、入力欄へ漏らす問題を避ける
 - `mouse on`：マウス操作の有効化
 - `allow-passthrough on`：OSC シーケンス等のパススルー
 - prefix を `Ctrl+b` から `Ctrl+a` に変更
@@ -87,6 +87,27 @@ bind-key w confirm-before -p "kill-pane? (y/n)" kill-pane
 ```bash
 tmux source-file ~/.tmux.conf
 ```
+
+設定値を確認する。
+
+```bash
+tmux show-options -s escape-time
+```
+
+`escape-time 100` と表示されれば反映済み。`100` はミリ秒単位で、端末応答を待つ時間と ESC キーの応答性のバランスを取った値。後述の表示崩れが続く場合は `500` まで増やす。
+
+## Windows Terminal 起動時に制御文字列が表示される場合
+
+プロンプトに次のような文字列が入力されることがある。
+
+```text
+11;rgb:2828/2c2c/3434
+61;4;6;7;14;21;22;23;24;28;32;42;52c
+```
+
+前者は背景色照会（OSC 11）、後者は端末機能照会（DA1）に対する Windows Terminal の応答。`escape-time 0` では、応答が複数回に分かれて届いたときに tmux が制御シーケンスとして処理できず、Bash の入力へ漏れる場合がある。
+
+このリポジトリでは `escape-time 100` を使用する。まだ発生する場合は `chezmoi/dot_tmux.conf` と `~/.tmux.conf` の値を `500` に変更して再読み込みする。値を大きくすると、tmux 内の Vim などで ESC キーの反応がわずかに遅くなる可能性がある。
 
 ## 最小操作
 
