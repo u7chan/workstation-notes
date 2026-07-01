@@ -13,6 +13,13 @@ alias tl='tmux ls'
 alias tn='tmux new -s'
 alias tk='tmux kill-session -t'
 
+# Herdr
+alias h='herdr'
+alias ha='herdr session attach'
+alias hl='herdr session list'
+alias hn='herdr session attach'
+alias hk='herdr session stop'
+
 # AIツールのインストール/更新
 # 使用例: update-claude, update-opencode, update-codex
 alias "update-claude"="curl -fsSL https://claude.ai/install.sh | bash"

@@ -218,12 +218,12 @@ fi
 # -------------------------
 # WSL / Windows Terminal 用の tmux 自動起動
 # -------------------------
-# Windows Terminal 上の WSL シェルで、まだ tmux に入っていない場合のみ
+# Windows Terminal 上の WSL シェルで、tmux と Herdr の外側にいる場合のみ
 # pane ごとに一意なセッション名で新しい tmux セッションを作成する。
 # tmux 越しのディレクトリ通知とマウススクロールも有効化する。
 # 生成したセッションには destroy-unattached を付け、pane を閉じて
 # 最後の client が外れたらそのセッションも自動で破棄する。
-if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
+if [ -z "$TMUX" ] && [ -z "$HERDR_ENV" ] && [ -n "$WT_SESSION" ]; then
   __auto_tmux_session_name="w$$"
   exec tmux new-session -s "$__auto_tmux_session_name" \; \
     bind-key -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" \

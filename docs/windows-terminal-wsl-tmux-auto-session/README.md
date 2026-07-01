@@ -67,8 +67,8 @@ case ";$PROMPT_COMMAND;" in
 esac
 
 # Windows Terminal + WSL で pane ごとに tmux session を自動作成する
-# まだ tmux 内でない shell のときだけ実行する
-if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
+# tmux と Herdr の外側にいる shell のときだけ実行する
+if [ -z "$TMUX" ] && [ -z "$HERDR_ENV" ] && [ -n "$WT_SESSION" ]; then
   __auto_tmux_session_name="w$$"
   exec tmux new-session -s "$__auto_tmux_session_name" \; \
     set-option -g allow-passthrough on \; \
@@ -79,7 +79,7 @@ if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
 fi
 ```
 
-starship を使う場合は、このブロックを `eval "$(starship init bash)"` より後に置く。tmux 内シェルでは `$TMUX` が設定済みのため、再度 `exec tmux` されない。
+starship を使う場合は、このブロックを `eval "$(starship init bash)"` より後に置く。tmux 内シェルでは `$TMUX`、Herdr 管理下のシェルでは `$HERDR_ENV` が設定済みのため、再度 `exec tmux` されない。
 
 ## なぜ `trap` ではなく `destroy-unattached` を使うか
 

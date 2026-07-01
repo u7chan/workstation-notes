@@ -103,8 +103,8 @@ eval "$(starship init bash)"
 source /home/u7dev/.safe-chain/scripts/init-posix.sh
 
 # Windows Terminal + WSL で pane ごとに tmux session を自動作成する
-# まだ tmux 内でない shell のときだけ実行する
-if [ -z "$TMUX" ] && [ -n "$WT_SESSION" ]; then
+# tmux と Herdr の外側にいる shell のときだけ実行する
+if [ -z "$TMUX" ] && [ -z "$HERDR_ENV" ] && [ -n "$WT_SESSION" ]; then
   __auto_tmux_session_name="w$$"
   exec tmux new-session -s "$__auto_tmux_session_name" \; \
     set-option -g allow-passthrough on \; \
