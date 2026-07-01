@@ -48,6 +48,40 @@ tc() {
   tmux capture-pane -t "$1" -p | tail -n "${2:-20}"
 }
 
+# tmux の自動生成 session から Herdr へ切り替える。
+# Herdr 終了後は Bash を起動し直し、.bashrc の設定で tmux へ戻る。
+herdr() {
+  local herdr_bin="$HOME/.local/bin/herdr"
+  local replace_client=
+
+  case "${1:-}" in
+    ""|--session|--remote|--no-session)
+      replace_client=1
+      ;;
+    session|agent|terminal)
+      if [ "${2:-}" = "attach" ]; then
+        replace_client=1
+      fi
+      ;;
+  esac
+
+  if [ -n "${TMUX:-}" ] && [ -z "${HERDR_ENV:-}" ] && [ -n "$replace_client" ]; then
+    local cmd arg quoted
+
+    printf -v cmd 'cd -- %q && %q' "$PWD" "$herdr_bin"
+    for arg in "$@"; do
+      printf -v quoted '%q' "$arg"
+      cmd+=" $quoted"
+    done
+    cmd+='; exec bash -i'
+
+    printf -v quoted '%q' "$cmd"
+    tmux detach-client -E "bash -lc $quoted"
+  else
+    "$herdr_bin" "$@"
+  fi
+}
+
 # =============================================================================
 # HTTP server helpers
 # =============================================================================
