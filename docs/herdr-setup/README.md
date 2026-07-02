@@ -141,83 +141,17 @@ herdr
 
 Homebrew、mise、Nix で導入した場合は、それぞれのパッケージ管理手段で更新する。
 
-## tmux との使い分け
+## Herdr への一本化
 
-tmux は汎用の永続ターミナルセッションとして成熟している。Herdr は同じ領域を扱いながら、AI エージェントの状態集約、セッション復元用の連携、CLI / Socket API によるエージェントからの操作を追加している。
+この環境ではターミナルマルチプレクサーを Herdr に一本化する。Windows Terminal、Zed、VS Code のどこから起動する場合も、作業ディレクトリで `herdr` を実行する。
 
-この環境では、どちらかへ一本化せず、起動元によって使い分ける。
+tmux の自動起動、エイリアス、補助関数、`~/.tmux.conf` は使用しない。Herdr を別のマルチプレクサー内で起動する二重構成も避ける。
 
-| 起動元 | 使用するマルチプレクサー | 用途 |
-| - | - | - |
-| Zed / VS Code の統合ターミナル | tmux | 統合ターミナル内でエージェントを起動し、既存の tmux ベースのオーケストレーションを使う |
-| Windows Terminal だけで作業する場合 | Herdr | 複数エージェントの状態確認、ワークスペース管理、detach / reattach を Herdr に任せる |
+## エイリアス
 
-このため、Windows Terminal + WSL での tmux 自動起動設定は残す。Windows Terminal で通常どおりシェルを開いた後、必要なときだけ tmux から Herdr へ切り替える。
-
-Herdr は tmux 内でも動作するが、ここでは二重に使わない。このリポジトリの tmux は prefix を `Ctrl+a`、Herdr は標準の `Ctrl+b` としているものの、session、pane、detach、マウス処理が二重になるため。
-
-### Herdr ペイン内での tmux 自動起動を防ぐ
-
-Herdr は管理下のペインへ `HERDR_ENV=1` を設定する。Herdr が起動した Bash で tmux が再び自動起動しないように、自動起動条件へ `HERDR_ENV` の確認を追加する。
+Herdr の操作に次のエイリアスを使用する。
 
 ```bash
-if [ -z "$TMUX" ] && [ -z "$HERDR_ENV" ] && [ -n "$WT_SESSION" ]; then
-  # tmux 自動起動
-fi
-```
-
-### tmux から Herdr へ切り替える関数
-
-tmux 3.4 の `detach-client -E` を使うと、現在の tmux client を切り離し、同じターミナルで Herdr を起動できる。
-
-```bash
-herdr() {
-  local herdr_bin="$HOME/.local/bin/herdr"
-  local replace_client=
-
-  case "${1:-}" in
-    ""|--session|--remote|--no-session)
-      replace_client=1
-      ;;
-    session|agent|terminal)
-      if [ "${2:-}" = "attach" ]; then
-        replace_client=1
-      fi
-      ;;
-  esac
-
-  if [ -n "${TMUX:-}" ] && [ -z "${HERDR_ENV:-}" ] && [ -n "$replace_client" ]; then
-    local cmd arg quoted
-
-    printf -v cmd 'cd -- %q && %q' "$PWD" "$herdr_bin"
-
-    for arg in "$@"; do
-      printf -v quoted '%q' "$arg"
-      cmd+=" $quoted"
-    done
-
-    # Herdr 終了後は Bash へ戻す。
-    # .bashrc の自動起動により、新しい tmux session が始まる。
-    cmd+='; exec bash -i'
-
-    printf -v quoted '%q' "$cmd"
-    tmux detach-client -E "bash -lc $quoted"
-  else
-    "$herdr_bin" "$@"
-  fi
-}
-```
-
-`detach-client -E` が起動するコマンドには、tmux ペイン内で移動したカレントディレクトリが自動では引き継がれない。そのため、関数内で `cd -- "$PWD"` 相当のコマンドを明示している。
-
-この切り替えは、Windows Terminal の pane ごとに自動生成される、使い捨ての tmux session 専用とする。共有 session や複数 pane を持つ通常の tmux session で実行すると、`destroy-unattached on` によって session 全体と配下のプロセスが終了する可能性がある。
-
-### エイリアス
-
-tmux の `t` と対応させ、Herdr は `h` で起動する。
-
-```bash
-alias t='tmux'
 alias h='herdr'
 alias ha='herdr session attach'
 alias hl='herdr session list'
@@ -234,8 +168,6 @@ alias hk='herdr session stop'
 | `hk work` | `herdr session stop work` | 名前付き session と配下のプロセスを停止 |
 
 Herdr には独立した `session new` コマンドはない。`session attach` が、指定した名前の session がなければ作成し、存在すれば接続するため、`ha` と `hn` は同じ定義になる。
-
-`h`、`ha`、`hn` は上記の `herdr` 関数を呼ぶため、tmux の自動生成 session 内では tmux から Herdr へ切り替わる。`hl` や `hk` など画面をattachしない管理コマンドは、tmuxを維持したまま実行する。
 
 ## 参考
 

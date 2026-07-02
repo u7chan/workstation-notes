@@ -6,13 +6,6 @@
 # 使用例: g status, g commit -m "fix: ..."
 alias g='git'
 
-# tmux
-alias t='tmux'
-alias ta='tmux attach -t'
-alias tl='tmux ls'
-alias tn='tmux new -s'
-alias tk='tmux kill-session -t'
-
 # Herdr
 alias h='herdr'
 alias ha='herdr session attach'
