@@ -13,8 +13,22 @@ yazi の Catppuccin Mocha テーマをベースに、ファイルタイプ別ア
 ## 前提
 
 - yazi 26.5.6
-- catppuccin-mocha / catppuccin-latte flavor 導入済み（[yazi の導入](../yazi-setup/README.md) 参照）
 - Nerd Font（アイコン表示に必要）
+- Catppuccin flavor 導入済み
+
+```bash
+ya pkg add yazi-rs/flavors:catppuccin-mocha
+ya pkg add yazi-rs/flavors:catppuccin-latte
+```
+
+```toml
+# ~/.config/yazi/theme.toml（flavor 指定の最小構成）
+[flavor]
+dark = "catppuccin-mocha"
+light = "catppuccin-latte"
+```
+
+ターミナルの背景色に応じて yazi がダーク/ライトを自動判定し、`[flavor] dark` / `[flavor] light` のテーマが適用される。
 
 ## やったこと
 
