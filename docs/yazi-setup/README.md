@@ -60,10 +60,9 @@ ya --version
 |----------|------|
 | `yazi.toml` | 一般設定（レイアウト、ソート、隠しファイル表示など） |
 | `keymap.toml` | キーバインド |
-| `theme.toml` | カラースキーム（ダークテーマベース） |
+| `theme.toml` | カラースキーム（Catppuccin Mocha / Latte） |
 | `vfs.toml` | 仮想ファイルシステム設定 |
 | `package.toml` | パッケージ管理（`ya pkg install` で復元） |
-| `theme.toml` | テーマ設定（Catppuccin Mocha をダークテーマに指定） |
 
 デフォルト設定ファイルは設定を上書きしたい部分だけ書けばよい。keymap の `prepend_keymap` / `append_keymap` を使えば、デフォルトキーバインドを維持したまま追加できる。
 
@@ -108,8 +107,8 @@ ya pkg install
 | `p` | ペースト |
 | `r` | リネーム |
 | `/` | 検索 |
-| `~` | ホームディレクトリへ |
-| `-` | 前のディレクトリへ戻る |
+| `g h` | ホームディレクトリへ |
+| `H` | 前のディレクトリへ戻る |
 
 ## 実行ログ
 
