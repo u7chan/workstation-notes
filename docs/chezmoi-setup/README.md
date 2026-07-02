@@ -41,7 +41,7 @@ v1 の対象環境は Windows 11 + WSL2 Ubuntu。
 
 ```bash
 sudo apt update
-sudo apt install -y git curl tmux ripgrep fd-find python3 python3-pip luarocks unzip gcc g++ make
+sudo apt install -y git curl ripgrep fd-find python3 python3-pip luarocks unzip gcc g++ make
 ```
 
 追加で用意するもの:
@@ -154,4 +154,5 @@ Lua LSP は Mason から入れてよい。
 - `docs/shell/README.md`
 - `docs/nvim-setup/README.md`
 - `docs/starship-setup/README.md`
-- `docs/tmux-setup/README.md`
+- `docs/herdr-setup/README.md`
+- `docs/herdr-agent-integrations/README.md`
