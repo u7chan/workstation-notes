@@ -93,6 +93,8 @@ chezmoi apply
 ya pkg install
 ```
 
+アイコンの追加や色のカスタマイズについては [yazi のテーマカスタマイズ](../yazi-theme-customize/README.md) を参照。
+
 ## 簡単な使い方
 
 | キー | 操作 |
