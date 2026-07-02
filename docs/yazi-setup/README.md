@@ -68,15 +68,6 @@ ya --version
 
 ### テーマ
 
-ターミナルの背景色に応じて、yazi がダーク/ライトを自動判定する。ダーク背景なら `[flavor] dark`、ライト背景なら `[flavor] light` のテーマが適用される。
-
-```toml
-# ~/.config/yazi/theme.toml
-[flavor]
-dark = "catppuccin-mocha"
-light = "catppuccin-latte"
-```
-
 Catppuccin シリーズは [yazi-rs/flavors](https://github.com/yazi-rs/flavors) のテーマで、`ya pkg` でインストールする:
 
 ```bash
@@ -84,14 +75,9 @@ ya pkg add yazi-rs/flavors:catppuccin-mocha
 ya pkg add yazi-rs/flavors:catppuccin-latte
 ```
 
-`ya pkg` で入れたパッケージは `package.toml` に記録される。このファイルを chezmoi で管理しておけば、新環境では `ya pkg install` で一括復元できる。
+`ya pkg` で入れたパッケージは `package.toml` に記録される。`ya pkg install` で一括復元できる。
 
-設定の適用:
-
-```bash
-chezmoi apply
-ya pkg install
-```
+`theme.toml` の設定やアイコンのカスタマイズについては [yazi のテーマカスタマイズ](../yazi-theme-customize/README.md) を参照。
 
 ## 簡単な使い方
 
