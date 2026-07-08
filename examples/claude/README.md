@@ -105,7 +105,7 @@
     // ステータスラインのカスタマイズ
     "statusLine": {
         "type": "command",
-        "command": "python3 /home/u7dev/.claude/statusline.py"
+        "command": "python3 ~/.claude/statusline.py"
     },
     "language": "Japanese"
 }
