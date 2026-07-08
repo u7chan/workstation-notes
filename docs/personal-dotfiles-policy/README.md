@@ -4,21 +4,25 @@ Last reviewed: 2026-06-16
 
 ## 基本方針
 
-個人設定は次の 3 層で分けて管理する。
+個人設定は次の 2 つのリポジトリで分けて管理する。
 
-1. `chezmoi`: `$HOME` に展開する実設定
-2. `docs`: 導入手順、前提、設計意図
-3. `examples`: 最小の参照実装
+1. `workstation-config`（別リポジトリ）: `$HOME` に展開する実設定を `chezmoi/` で管理
+2. `workstation-notes`（このリポジトリ）: 導入手順、前提、設計意図、最小の参照実装
+
+このリポジトリ内では以下のように分ける。
+
+- `docs/`: 手順書、背景、設計意図
+- `examples/`: 最小の参照実装
 
 ## 置き場所のルール
 
-- 実配布するファイルは `chezmoi/` に置く
-- 手順書は `docs/` に置く
-- 実配置先にそのまま置かないサンプルは `examples/` に置く
+- 実配布するファイルは `workstation-config` の `chezmoi/` に置く
+- 手順書はこのリポジトリの `docs/` に置く
+- 実配置先にそのまま置かないサンプルはこのリポジトリの `examples/` に置く
 
 ## secrets の扱い
 
-- API キー、トークン、秘密鍵は `chezmoi` に入れない
+- API キー、トークン、秘密鍵は `workstation-config` の `chezmoi` に入れない
 - `~/.config/envs/*/.env` のような別管理に寄せる
 - 権限は `600` を基本にする
 
@@ -32,10 +36,10 @@ v1 は Windows 11 + WSL2 Ubuntu に寄せる。
 
 ## 更新フロー
 
-1. `chezmoi/` の source を更新する
+1. `workstation-config` の `chezmoi/` の source を更新する
 2. `chezmoi diff` で差分を見る
 3. `chezmoi apply` で反映する
-4. 関連する `docs/` を更新する
+4. 関連するこのリポジトリの `docs/` を更新する
 
 ## 対象外
 
