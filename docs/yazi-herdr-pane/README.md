@@ -29,7 +29,7 @@ command = "yazi"
 herdr server reload-config
 ```
 
-この設定は chezmoi 管理対象（`chezmoi/dot_config/herdr/config.toml`）。
+この設定は dotfiles 管理対象（`~/.config/herdr/config.toml`）。
 
 ## 使い方
 

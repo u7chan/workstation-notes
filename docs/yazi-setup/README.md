@@ -54,7 +54,7 @@ ya --version
 
 設定ファイルのデフォルトは `~/.config/yazi/` に置く。
 
-このリポジトリでは chezmoi で管理している。実体は `chezmoi/dot_config/yazi/` 配下。
+このリポジトリでは設定ファイル本体は workstation-config 側で一元管理している。
 
 | ファイル | 役割 |
 |----------|------|
