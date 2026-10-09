@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "blender": {
+      "command": "uvx",
+      "args": ["mcp-for-blender"],
+      "env": {
+        "BLENDER_HOST": "172.25.128.1",
+        "BLENDER_PORT": "9877"
+      },
+      "description": "Windows ホストの Blender を socket 経由で操作する"
+    }
+  }
+}
