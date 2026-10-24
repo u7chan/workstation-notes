@@ -4,7 +4,7 @@ Last reviewed: 2026-10-24
 
 適用先: WSL2（Ubuntu）上の Chromium 系ツール。fontconfig を使うもの全般（playwright-cli、Chrome / Chrome for Testing、Electron アプリ）
 
-実環境への適用は workstation-config で管理している（[fontconfig: Chromium の CJK フォールバックを日本語字形に固定する #226](https://github.com/u7chan/workstation-config/pull/226)）。
+実環境への適用は workstation-config の `home/dot_config/fontconfig/fonts.conf` で管理している（[fontconfig: Chromium の CJK フォールバックを日本語字形に固定する #226](https://github.com/u7chan/workstation-config/pull/226)）。
 
 ## 概要
 
@@ -12,7 +12,7 @@ WSL の Chromium で日本語ページをスクリーンショットすると、
 
 `~/.config/fontconfig/fonts.conf` の `prefer` で generic family の並びを上書きし、WenQuanYi Zen Hei より前に日本語フォント（Noto Sans / Serif CJK JP）を置くと解消する。`fonts-noto-cjk` をインストールするのは、この `prefer` 先の実体を用意するため。インストールだけでは直らない。
 
-`LANG` を日本語ロケールにしても、ページの HTML に `lang="ja"` を書いても、`lang=ja` を条件にした fontconfig ルールでも直らない（すべて実測で効果なし）。Chromium はページの `lang` を fontconfig の問い合わせに渡さないため、効くのは generic family の並び順だけ。
+`LANG` を日本語ロケールにしても、ページの HTML に `lang="ja"` を書いても、`lang=ja` を条件にした fontconfig ルールでも直らない（すべて実測で効果なし）。この環境の Chrome for Testing 152 では、`lang=ja` を条件にしたルールが CJK フォールバックに効かなかった。Skia の fontconfig backend は BCP-47 から `FC_LANG` を立てる実装があり、Chromium の経路しだいで変わる部分なので、generic family の並び順を固定する方が確実。
 
 ## 症状
 
@@ -104,7 +104,7 @@ ipagp.ttf: "IPAPGothic" "Regular"
 
 ### lang=ja を条件にしたルールでは直らない
 
-`fonts-noto-cjk` が入れる `/etc/fonts/conf.d/70-fonts-noto-cjk.conf` は、`lang` に `ja` を含むパターンにだけ Noto CJK JP を prepend する設定で、番号は `64-wqy-zenhei.conf` より後ろになる。`fc-match "sans-serif:lang=ja"` は期待どおり Noto を返す。
+`fonts-noto-cjk` が入れる `/etc/fonts/conf.d/70-fonts-noto-cjk.conf` は、`lang` に `ja` を含むパターンにだけ Noto CJK JP を prepend する設定で、番号は `64-wqy-zenhei.conf` より後ろになる。`70-fonts-noto-cjk.conf` が有効な状態（パッケージ導入、または `~/.config/fontconfig/conf.d/` への配置）なら、`fc-match "sans-serif:lang=ja"` は期待どおり Noto を返す。以降の手順は、`apt-get download` で展開した設定を `~/.config/fontconfig/conf.d/70-fonts-noto-cjk.conf` に置いて再現した。
 
 しかし Chromium の描画は変わらなかった。同じ書き方の `lang=ja` ルールを `~/.config/fontconfig/fonts.conf` に置いても、スクリーンショットは WenQuanYi のままだった（いずれも実測）。
 
@@ -114,7 +114,7 @@ NotoSansCJK-Regular.ttc: "Noto Sans CJK JP" "Regular"
 # それでも Chromium の描画は WenQuanYi のまま（修正前の画像とピクセル一致）
 ```
 
-Chromium はページの `lang` を fontconfig に渡さず、`lang` 無しで解決した family の並びを文字ごとに辿ってフォールバック先を決める。効くのは generic family の並び順だけ。
+この環境の Chromium は、`lang` 無しで解決した family の並びを文字ごとに辿ってフォールバック先を決めていた。`lang=ja` ルールが効かない以上、効くのは generic family の並び順だけ。
 
 ### この環境で fonts-wqy-zenhei が入っている理由
 
@@ -153,7 +153,7 @@ wqy-zenhei.ttc: "WenQuanYi Zen Hei" "Regular"
 sudo apt install fonts-noto-cjk
 ```
 
-このインストールだけでは直らない。パッケージが入れる `70-fonts-noto-cjk.conf` は `lang=ja` 条件のルールなので、`lang` を渡さない Chromium には効かない（[lang=ja を条件にしたルールでは直らない](#langja-を条件にしたルールでは直らない)）。手順 1 と組み合わせる。
+このインストールだけでは直らない。パッケージが入れる `70-fonts-noto-cjk.conf` は `lang=ja` 条件のルールなので、`lang=ja` ルールが効かない Chromium には効かない（[lang=ja を条件にしたルールでは直らない](#langja-を条件にしたルールでは直らない)）。手順 1 と組み合わせる。
 
 `sudo` を使えない場合は、パッケージを展開してユーザーローカルに入れる。`~/.local/share/fonts` は `/etc/fonts/fonts.conf` の既定の探索パスに含まれるため、フォントを置けば fontconfig が拾う（キャッシュの再生成は不要）。
 
@@ -208,7 +208,7 @@ wqy-zenhei.ttc: "WenQuanYi Zen Hei" "Regular"
 - 初回のフォントスキャンに約 8 秒かかる（`/mnt/c` は 9p 越しで、355 ファイル）。`fc-cache` 後はキャッシュが効く
 - `/mnt/c` がマウントされている前提。マウント設定を変えると壊れる
 - Windows 由来のフォントを WSL 内の描画に使うのは各自の環境内の話に留め、成果物へ同梱しない
-- Latin も Meiryo にすると英字が变わる。DejaVu を先に残すか、実際の描画で確認する
+- Latin も Meiryo にすると英字が変わる。DejaVu を先に残すか、実際の描画で確認する
 
 ### 5. パッケージごと外す（任意）
 
@@ -218,9 +218,24 @@ wqy-zenhei.ttc: "WenQuanYi Zen Hei" "Regular"
 sudo apt purge fonts-wqy-zenhei
 ```
 
-中国語ページの表示は逆に悪くなるため、日本語しか見ない環境以外では `prefer` による上書き（手順 1）で足りる。
+`prefer` の上書き（手順 1）は中国語ページの描画も日本語字形へ寄せる（下の「中国語ページへの影響」を参照）。中国語ページを優先したい環境では、手順 1 を入れずにこの purge だけを行う選択肢もあるが、日本語ページの字形は改善しない。
 
 設定ファイルだけを無効化する目的で `ln -sf /dev/null /etc/fonts/conf.d/64-wqy-zenhei.conf` を打つ方法は、この環境では使えない。fontconfig 2.17.1 は空ファイルを読めず、`Fontconfig error: ... no element found` で設定全体の読み込みに失敗する（実測）。
+
+## 中国語ページへの影響
+
+`prefer` の上書きは generic family の並びを変えるので、Chromium では中国語ページも日本語字形で描画される。言い換えると、Chromium 上では日本語と中国語の字形を出し分けられない。
+
+```console
+$ fc-match 'sans-serif:charset=76f4'   # 直 (U+76F4)。Chromium 相当の lang 無し解決
+NotoSansCJK-Regular.ttc: "Noto Sans CJK JP" "Regular"      # 設定後
+wqy-zenhei.ttc: "WenQuanYi Zen Hei" "Regular"              # 設定前
+
+$ fc-match 'sans-serif:lang=zh-cn'     # lang を渡す利用側
+NotoSansCJK-Regular.ttc: "Noto Sans CJK SC" "Regular"
+```
+
+`lang` を渡す fontconfig 利用側（GTK / Pango 系など）は `zh-cn` に対して SC の字形を選ぶため、影響は Chromium 系に限られる。中国語ページの字形を Chromium でも維持したい場合は、この方法では両立できない。
 
 ## 効かなかった対処
 
@@ -228,7 +243,7 @@ sudo apt purge fonts-wqy-zenhei
 | --- | --- |
 | `fonts-noto-cjk` を入れるだけ | 変化なし。`70-fonts-noto-cjk.conf` は `lang=ja` 条件のルールなので Chromium には効かない |
 | `lang=ja` を条件にしたルール（`70-fonts-noto-cjk.conf` と同じ書き方） | 変化なし。`fc-match -s "sans-serif:lang=ja"` は Noto を返すが、描画は WenQuanYi のまま |
-| ページの HTML に `lang="ja"` を付ける | 変化なし。ページの `lang` も fontconfig への問い合わせに使われない |
+| ページの HTML に `lang="ja"` を付ける | 変化なし（この環境の Chrome for Testing 152 で実測）。`lang` を条件にしたルールも効かなかった |
 | `LANG=ja_JP.UTF-8` / `LC_ALL=ja_JP.UTF-8` で Chromium を起動 | 変化なし |
 | CSS に latin フォント名だけを書く（`-apple-system, "Segoe UI", Roboto, sans-serif` など） | 変化なし。CJK は最終的に generic family へ落ちるので、fontconfig 側の設定がそのまま効く。逆に言えば、fontconfig を直せば手を入れなくても直る |
 | `fc-cache -f` だけ実行 | 変化なし。キャッシュの再生成では優先順位は変わらない |

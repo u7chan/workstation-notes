@@ -13,7 +13,7 @@ cp fonts.conf ~/.config/fontconfig/fonts.conf
 fc-match -s sans-serif | grep -E 'Noto Sans CJK JP|WenQuanYi' | head -2
 ```
 
-`fonts-noto-cjk` を入れても、それだけでは直らない。パッケージが入れる `70-fonts-noto-cjk.conf` は `lang=ja` 条件のルールで、`lang` を渡さない Chromium には効かない。この `fonts.conf` とセットで使う。
+`fonts-noto-cjk` を入れても、それだけでは直らない。パッケージが入れる `70-fonts-noto-cjk.conf` は `lang=ja` 条件のルールで、Chromium の CJK フォールバックには効かない。この `fonts.conf` とセットで使う。
 
 既存の `~/.config/fontconfig/fonts.conf` がある場合は置き換えず、`<alias>` のブロックだけを追記する。
 
