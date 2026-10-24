@@ -153,7 +153,9 @@ wqy-zenhei.ttc: "WenQuanYi Zen Hei" "Regular"
 sudo apt install fonts-noto-cjk
 ```
 
-このインストールだけでは直らない。パッケージが入れる `70-fonts-noto-cjk.conf` は `lang=ja` 条件のルールなので、`lang=ja` ルールが効かない Chromium には効かない（[lang=ja を条件にしたルールでは直らない](#langja-を条件にしたルールでは直らない)）。手順 1 と組み合わせる。
+このインストールだけでは直らない。実機（`apt install fonts-noto-cjk` 直後、手順 1 未適用）でも、`fc-match 'sans-serif:charset=76f4'` と `fc-match 'sans-serif:lang=ja'` は `WenQuanYi Zen Hei` を返し、Chromium の描画も設定前とピクセル一致だった（`lang=zh-cn` だけは `Noto Sans CJK SC` になる）。
+
+`70-fonts-noto-cjk.conf` の `ja` ルールは `64-wqy-zenhei.conf` の `prefer` に勝てず、フォントの配置によっては Noto が勝つ場合もある（本ページの検証でも、展開したフォントを `~/.local/share/fonts` に置いた構成では `lang=ja` が Noto になった）。`lang` 条件に頼らず generic family の並びを固定するのが確実で、手順 1 と組み合わせる。
 
 `sudo` を使えない場合は、パッケージを展開してユーザーローカルに入れる。`~/.local/share/fonts` は `/etc/fonts/fonts.conf` の既定の探索パスに含まれるため、フォントを置けば fontconfig が拾う（キャッシュの再生成は不要）。
 
