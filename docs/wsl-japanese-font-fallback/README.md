@@ -235,7 +235,7 @@ $ fc-match 'sans-serif:lang=zh-cn'     # lang を渡す利用側（70-fonts-noto
 NotoSansCJK-Regular.ttc: "Noto Sans CJK SC" "Regular"
 ```
 
-`lang=zh-cn` で SC になるのは `70-fonts-noto-cjk.conf`（または手順 2 で置いた設定）が有効な場合。`prefer` の上書きだけを入れて 70 の設定が無い環境では、このクエリも Noto Sans CJK JP を返す。
+`lang=zh-cn` で SC になるのは `70-fonts-noto-cjk.conf` が有効な場合（`sudo apt install fonts-noto-cjk` で入る、または `~/.config/fontconfig/conf.d/` に置いた場合）。手順 1 の `prefer` だけを入れて 70 の設定が無い環境（sudo 無しで `~/.local/share/fonts` にフォントを置いただけの状態など）では、このクエリも Noto Sans CJK JP を返す。
 
 `lang` を渡す fontconfig 利用側（GTK / Pango 系など）は `zh-cn` に対して SC の字形を選ぶため、影響は Chromium 系に限られる。中国語ページの字形を Chromium でも維持したい場合は、この方法では両立できない。
 
