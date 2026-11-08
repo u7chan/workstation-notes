@@ -19,6 +19,6 @@ systemctl --user enable --now hwc.service
 ## 読み替えが要る箇所
 
 - `WorkingDirectory=%h/workspace/hwc`: HWC のリポジトリを別の場所に置いている場合はパスを変える
-- `Environment=PATH=...`: 起動するコマンド（`bun` / `pi` / `gh` / `opencode`）の解決先を足す。ユニットの環境は対話シェルの `PATH` を引き継がないため、必要なものだけを明示する
+- `Environment=PATH=...`: HWC が子プロセスで起動する `pi` / `gh` / `git` / `codex` の解決先を足す。ユニットの環境は対話シェルの `PATH` を引き継がないため、必要なものだけを明示する。`opencode` はバイナリを起動せずローカルサービスの情報を HTTP で読むので、PATH には不要
 
 `%h` は systemd がユーザーのホームディレクトリへ展開する。ユーザー名を書かずに済むので、共有しやすい。

@@ -6,8 +6,8 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 WorkingDirectory=%h/workspace/hwc
-# HWC は pi / gh / git / opencode を子プロセスで起動するので、対話シェルと同じ解決順を渡す。
-Environment="PATH=%h/.local/share/mise/shims:%h/.local/bin:%h/.opencode/bin:/usr/local/bin:/usr/bin:/bin"
+# HWC は pi / gh / git / codex を子プロセスで起動するので、対話シェルと同じ解決順を渡す。
+Environment="PATH=%h/.local/share/mise/shims:%h/.local/bin:/usr/local/bin:/usr/bin:/bin"
 ExecStart=%h/.local/share/mise/shims/bun --watch src/server.ts
 Restart=always
 RestartSec=3
