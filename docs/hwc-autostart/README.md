@@ -77,12 +77,11 @@ HWC は Herdr の socket から状態を取る。Herdr がまだ起動してい�
 
 ### 手元で `bun run dev` を起動しない
 
-同じポート 30000 を取り合うので、起動順によって次のどちらかになる。
+同じポート 30000 を取り合う。後から起動した側は `EADDRINUSE` で bind に失敗するが、`bun --watch` はプロセスが終了せず監視だけが残る（`bun src/server.ts` を直接起動した場合は exit 1）。
 
-- ユニットが先に待受中の状態で `bun run dev` を起動すると、dev 側が bind に失敗して終了する
-- dev が先にポートを掴んだままユニットが起動・再起動すると、ユニットが待受を取れずに再起動を繰り返す
-
-手元で動かしたいときは先に `systemctl --user stop hwc.service` する。
+- 先に待受を取った側だけが応答する。ユニットが負けた場合は `active` のまま待受が立たない。`Restart=always` はプロセスの終了でしか働かないので、自動では戻らない
+- 手元の dev を止めてから `systemctl --user restart hwc.service` で戻す
+- 手元で動かしたいときは先に `systemctl --user stop hwc.service` する
 
 ### マージ直後に 1〜2 回再起動する
 
